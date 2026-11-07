@@ -1,51 +1,21 @@
 "use client";
 
-import { useState, type CSSProperties, type FormEvent } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { container, eyebrow, reveal, sectionBody, sectionTitle } from "./styles";
-
-const CONTACTS = [
-  {
-    href: "mailto:sales@enerceon.com",
-    icon: "✉",
-    tone: "cyan",
-    iconColor: "#4FD5F0",
-    iconBg: "rgba(0,200,245,.12)",
-    label: "sales@enerceon.com",
-    detail: "Demos, pricing and pilots",
-  },
-  {
-    href: "mailto:support@enerceon.com",
-    icon: "◈",
-    tone: "cyan",
-    iconColor: "#4FD5F0",
-    iconBg: "rgba(0,200,245,.12)",
-    label: "support@enerceon.com",
-    detail: "Deployment and integration support",
-  },
-];
-
-const field: CSSProperties = {
-  width: "100%",
-  border: "1px solid rgba(255,255,255,.12)",
-  background: "rgba(255,255,255,.06)",
-  color: "#fff",
-  borderRadius: "10px",
-  padding: "14px",
-  outline: "none",
-  fontSize: "15px",
-};
+import { useState, type FormEvent } from "react";
+import Icon from "./Icon";
+import { SALES_EMAIL, SUPPORT_EMAIL } from "@/lib/site";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
 const BUTTON_LABEL: Record<Status, string> = {
-  idle: "Request demo →",
+  idle: "Request a demo",
   sending: "Sending…",
-  sent: "Thanks — we'll be in touch ✓",
-  error: "Try again →",
+  sent: "Thanks — we'll be in touch",
+  error: "Try again",
 };
 
-const FALLBACK = "Please email sales@enerceon.com instead.";
+const FALLBACK = `Please email ${SALES_EMAIL} instead.`;
 
 /* Web3Forms' free plan accepts submissions from the browser only — server-side
    relaying returns 403 — so the access key is deliberately public. It authorises
@@ -111,227 +81,88 @@ export default function Contact() {
   }
 
   return (
-    <section
-      id="contact"
-      data-tone="b"
-      style={{ background: "#061424", padding: "clamp(58px,10vw,104px) 0" }}
-    >
-      <div
-        style={{
-          ...container,
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))",
-          gap: "clamp(26px,5vw,54px)",
-          alignItems: "start",
-        }}
-      >
-        <div className="en-reveal" style={reveal()}>
-          <div data-t="mono" className="en-mono" style={eyebrow}>
-            09 / Talk to us
-          </div>
-          <h2
-            data-t="title"
-            className="en-display"
-            style={{ ...sectionTitle, fontSize: "clamp(27px,5.6vw,40px)" }}
-          >
-            Your energy data already exists. Make it easier to understand.
-          </h2>
-          <p data-t="body" style={{ ...sectionBody, maxWidth: "48ch" }}>
-            A tailored demonstration, mapped to your building and meter structure, with integration
-            discussed against your real data sources.
+    <section id="contact" className="en-sec en-dark en-contact">
+      <div className="en-wrap en-contact-row">
+        <div className="en-contact-copy en-reveal">
+          <p className="en-eyebrow">
+            <span>08</span>Talk to us
           </p>
-
-          <div style={{ display: "grid", gap: "10px", marginTop: "26px" }}>
-            {CONTACTS.map((contact) => (
-              <a
-                key={contact.href}
-                href={contact.href}
-                data-soft=""
-                className="en-contact-row"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "14px",
-                  padding: "15px",
-                  borderRadius: "12px",
-                  border: "1px solid rgba(255,255,255,.09)",
-                  background: "rgba(255,255,255,.03)",
-                }}
-              >
-                <span
-                  data-icon={contact.tone}
-                  style={{
-                    width: "34px",
-                    height: "34px",
-                    flex: "0 0 34px",
-                    borderRadius: "9px",
-                    background: contact.iconBg,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "15px",
-                    color: contact.iconColor,
-                  }}
-                >
-                  {contact.icon}
-                </span>
+          <h2 className="en-h2">
+            See your facility <em>in Enerceon</em>.
+          </h2>
+          <p className="en-lead">
+            Ask us for a live walkthrough with your own sites, meters and accounts — from the first dashboard to the
+            first bill sent.
+          </p>
+          <ul className="en-contact-list">
+            <li>
+              <a href={`mailto:${SALES_EMAIL}`}>
                 <span>
-                  <b
-                    data-t="title"
-                    className="en-display"
-                    style={{ display: "block", fontSize: "14.5px", color: "#fff" }}
-                  >
-                    {contact.label}
-                  </b>
-                  <span data-t="dim" style={{ fontSize: "12.5px", color: "#8299AE" }}>
-                    {contact.detail}
-                  </span>
+                  <Icon name="mail" size={18} />
                 </span>
+                <div>
+                  <strong>{SALES_EMAIL}</strong>
+                  <small>Demos, pricing and pilots</small>
+                </div>
               </a>
-            ))}
-          </div>
+            </li>
+            <li>
+              <a href={`mailto:${SUPPORT_EMAIL}`}>
+                <span>
+                  <Icon name="shield" size={18} />
+                </span>
+                <div>
+                  <strong>{SUPPORT_EMAIL}</strong>
+                  <small>Deployment and support</small>
+                </div>
+              </a>
+            </li>
+          </ul>
+          <Image
+            src="/assets/enerceon-logo-tagline-light.png"
+            alt="Enerceon — Your Energy. Reimagined."
+            width={1399}
+            height={280}
+            sizes="240px"
+            className="en-contact-logo"
+          />
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          data-panel=""
-          style={{
-            background: "#07162A",
-            border: "1px solid rgba(255,255,255,.09)",
-            borderRadius: "18px",
-            padding: "clamp(22px,4.5vw,38px)",
-          }}
-        >
-          <h3
-            data-t="title"
-            className="en-display"
-            style={{ fontSize: "20px", fontWeight: 600, color: "#fff", margin: "0 0 6px" }}
-          >
-            Request a demo
-          </h3>
-          <p data-t="dim" style={{ fontSize: "13px", color: "#8CA3B8", margin: "0 0 18px" }}>
-            Tell us about your site or portfolio.
-          </p>
-
-          <div style={{ display: "grid", gap: "10px" }}>
-            <label className="en-sr-only" htmlFor="demo-name">
-              Name
+        <form className="en-form en-reveal" style={{ ["--d" as string]: "120ms" }} onSubmit={handleSubmit} noValidate={false}>
+          <div className="en-form-grid">
+            <label>
+              <span>Name</span>
+              <input name="name" autoComplete="name" required maxLength={120} placeholder="Your name" />
             </label>
-            <input
-              id="demo-name"
-              name="name"
-              autoComplete="name"
-              required
-              data-input=""
-              className="en-input"
-              placeholder="Name"
-              style={field}
-            />
-
-            <label className="en-sr-only" htmlFor="demo-email">
-              Work email
+            <label>
+              <span>Work e-mail</span>
+              <input name="email" type="email" autoComplete="email" required maxLength={160} placeholder="you@company.com" />
             </label>
-            <input
-              id="demo-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              data-input=""
-              className="en-input"
-              placeholder="Work email"
-              style={field}
-            />
-
-            <label className="en-sr-only" htmlFor="demo-company">
-              Company / organisation
+            <label className="is-wide">
+              <span>Company / property</span>
+              <input name="company" autoComplete="organization" maxLength={160} placeholder="Company or building name" />
             </label>
-            <input
-              id="demo-company"
-              name="company"
-              autoComplete="organization"
-              data-input=""
-              className="en-input"
-              placeholder="Company / organisation"
-              style={field}
-            />
-
-            <label className="en-sr-only" htmlFor="demo-message">
-              What would you like to monitor or improve?
+            <label className="is-wide">
+              <span>Message</span>
+              <textarea
+                name="message"
+                rows={4}
+                maxLength={2000}
+                placeholder="Sites, number of meters, utilities, how you bill today…"
+              />
             </label>
-            <textarea
-              id="demo-message"
-              name="message"
-              data-input=""
-              className="en-input"
-              placeholder="What would you like to monitor or improve?"
-              style={{
-                ...field,
-                minHeight: "96px",
-                resize: "vertical",
-                fontFamily: "inherit",
-              }}
-            />
-
-            {/* Honeypot — visually hidden, never announced, bots fill it. */}
-            <input
-              type="text"
-              name="botcheck"
-              tabIndex={-1}
-              autoComplete="off"
-              aria-hidden="true"
-              className="en-sr-only"
-            />
-
-            <button
-              type="submit"
-              disabled={status === "sending"}
-              className="en-submit"
-              style={{
-                width: "100%",
-                border: 0,
-                cursor: "pointer",
-                padding: "15px",
-                borderRadius: "999px",
-                background: "linear-gradient(90deg,#007BFF,#00C8F5 55%,#2ECC71)",
-                color: "#04121F",
-                fontWeight: 600,
-                fontSize: "15px",
-              }}
-            >
-              {BUTTON_LABEL[status]}
-            </button>
           </div>
-
-          {status === "error" && error && (
-            <p
-              role="alert"
-              style={{
-                fontSize: "12.5px",
-                color: "#FF8A78",
-                margin: "12px 0 0",
-                textAlign: "center",
-              }}
-            >
-              {error}
-            </p>
-          )}
-
-          <p
-            data-t="dim"
-            style={{
-              fontSize: "11px",
-              color: "#6F869B",
-              margin: "12px 0 0",
-              textAlign: "center",
-              lineHeight: 1.6,
-            }}
-          >
-            We use your details only to answer this enquiry. See our{" "}
-            <Link href="/privacy" style={{ color: "#7BE7FB" }}>
-              privacy notice
-            </Link>
-            .
+          {/* honeypot */}
+          <input type="text" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden="true" className="en-hp" />
+          <button type="submit" className="en-btn en-btn-gold en-form-submit" disabled={status === "sending"}>
+            {BUTTON_LABEL[status]}
+            {status !== "sending" && <Icon name={status === "sent" ? "check" : "arrowRight"} size={16} />}
+          </button>
+          <p className="en-form-status" role="status" aria-live="polite">
+            {status === "error" ? error : status === "sent" ? "Your request has been sent." : ""}
+          </p>
+          <p className="en-form-note">
+            We use these details only to reply to you. See the <Link href="/privacy">privacy notice</Link>.
           </p>
         </form>
       </div>

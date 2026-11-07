@@ -26,7 +26,7 @@ const plexMono = IBM_Plex_Mono({
 
 const PAGE_TITLE = "Enerceon — Energy Intelligence & Management Platform";
 const SHORT_PITCH =
-  "Know where your energy goes. Know what to do next. Multi-site, multi-utility energy monitoring, analytics and reporting — on-premise and browser-based.";
+  "Every meter. Every tenant. Every bill. Monitor electricity, water, gas and BTU/cooling, analyse tenant consumption, and create, send and collect utility bills — in one web-based platform.";
 
 const OG_IMAGE = {
   url: "/assets/og-enerceon.png",
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#040D19",
+  themeColor: "#18181b",
 };
 
 const JSON_LD = {
@@ -124,40 +124,36 @@ const JSON_LD = {
       name: SITE_NAME,
       applicationCategory: "BusinessApplication",
       applicationSubCategory: "Energy Management Software",
-      operatingSystem: "Web browser (on-premise deployment)",
+      operatingSystem: "Web browser",
       url: `${SITE_URL}/`,
       publisher: { "@id": `${SITE_URL}/#org` },
       description:
-        "Energy intelligence and management platform for multi-site, multi-utility monitoring, analytics, thresholds and reporting.",
+        "Web-based energy intelligence and management platform for multi-utility monitoring, tenant consumption analytics, meter hierarchy diagrams and utility billing.",
       featureList: [
-        "Multi-site hierarchy: site, building, floor, space, meter",
         "Electricity, water, gas and BTU/cooling monitoring",
-        "Hourly to yearly consumption analytics",
-        "Consumption thresholds on charts",
-        "Load profile and peak demand",
-        "Time-of-day breakdown",
-        "Ranking and contribution",
-        "Reporting and tenant access",
-        "Niagara, BMS, Modbus, API and SQL integration",
-        "On-premise, browser-based deployment",
+        "Live monitoring: live, peak and average power, meter status, 15-minute intervals",
+        "All Tenants Ranking, All Tenants Yearly and Tenant Meters Consumption dashboards",
+        "Single Line Diagram of main, child and sub-meters",
+        "Energy Sources diagram with consumption distribution",
+        "Meter Management and User Management",
+        "Accounts Management: Tenant, Building Owner and Building Management",
+        "Bill Builder with peak and off-peak tariffs, tax, discounts and late payment",
+        "Billing Overview, Bill History, Payments, Missing Bills and Tenant History",
+        "Bill delivery by e-mail and WhatsApp",
+        "Light and dark mode",
       ],
     },
   ],
 };
 
-// Applies the stored theme before first paint so a light-theme visitor never sees a dark flash.
-const THEME_BOOTSTRAP = `try{var t=localStorage.getItem("enerceon-theme");document.documentElement.dataset.theme=t==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}`;
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      data-theme="dark"
       className={`${spaceGrotesk.variable} ${plexSans.variable} ${plexMono.variable}`}
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}

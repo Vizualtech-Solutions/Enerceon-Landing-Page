@@ -1,191 +1,115 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import Icon from "./Icon";
 import { NAV_LINKS } from "@/lib/content";
-import { container } from "./styles";
 
-export default function Header({ onToggleTheme }: { onToggleTheme: () => void }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+/** Sticky top bar: transparent over the hero, solid once the page scrolls.
+ *  Links are plain #anchors (smooth scrolling comes from CSS), and the link of
+ *  the section in view is highlighted. */
+export default function Header() {
+  const [solid, setSolid] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState<string>("home");
+
+  useEffect(() => {
+    const onScroll = () => setSolid(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Highlight the section that crosses the upper third of the viewport.
+  useEffect(() => {
+    const sections = NAV_LINKS.map((l) => document.getElementById(l.id)).filter(Boolean) as HTMLElement[];
+    if (!("IntersectionObserver" in window) || !sections.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-30% 0px -65% 0px", threshold: 0 },
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, []);
+
+  // Close the mobile menu with Escape or when the viewport grows to desktop.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const mq = window.matchMedia("(min-width: 1120px)");
+    const onMq = () => mq.matches && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    mq.addEventListener("change", onMq);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      mq.removeEventListener("change", onMq);
+    };
+  }, [open]);
 
   return (
-    <header
-      data-tone="bar"
-      data-line=""
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 80,
-        background: "rgba(4,13,25,.86)",
-        backdropFilter: "blur(18px)",
-        borderBottom: "1px solid rgba(255,255,255,.07)",
-        transition: "background .5s ease",
-      }}
-    >
-      <div
-        style={{
-          ...container,
-          minHeight: "70px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "12px",
-        }}
-      >
-        <a href="#top" style={{ display: "flex", alignItems: "center", flex: "0 0 auto" }}>
+    <header className={`en-header${solid || open ? " is-solid" : ""}${open ? " is-open" : ""}`}>
+      <div className="en-wrap en-header-row">
+        <a href="#home" className="en-logo" aria-label="Enerceon — back to top" onClick={() => setOpen(false)}>
           <Image
-            data-logo=""
-            src="/assets/enerceon-wordmark.png"
+            src="/assets/enerceon-wordmark-light.png"
             alt="ENERCEON"
             width={1405}
             height={170}
             priority
-            sizes="164px"
-            style={{
-              display: "block",
-              width: "clamp(122px,25vw,164px)",
-              height: "auto",
-              filter: "brightness(0) invert(1)",
-            }}
+            sizes="160px"
           />
         </a>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button
-            type="button"
-            onClick={onToggleTheme}
-            aria-label="Switch theme"
-            data-chip=""
-            className="en-chip-hover"
-            style={{
-              cursor: "pointer",
-              width: "40px",
-              height: "40px",
-              borderRadius: "999px",
-              border: "1px solid rgba(255,255,255,.14)",
-              background: "rgba(255,255,255,.05)",
-              color: "#BFF1FF",
-              fontSize: "15px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span className="en-theme-sun" aria-hidden="true">
-              ☀
-            </span>
-            <span className="en-theme-moon" aria-hidden="true">
-              ☾
-            </span>
-          </button>
-          <a
-            href="#contact"
-            className="en-cta"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "11px clamp(14px,3vw,22px)",
-              borderRadius: "999px",
-              background: "linear-gradient(90deg,#007BFF,#00C8F5 55%,#2ECC71)",
-              color: "#04121F",
-              fontWeight: 600,
-              fontSize: "13.5px",
-              whiteSpace: "nowrap",
-            }}
-          >
-            <span className="en-cta-full">Request a demo</span>
-            <span className="en-cta-short">Demo</span>
+
+        <nav className="en-nav" aria-label="Sections">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              className={`en-nav-link${active === link.id ? " is-active" : ""}`}
+              aria-current={active === link.id ? "true" : undefined}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="en-header-cta">
+          <a href="#contact" className="en-btn en-btn-gold en-btn-sm">
+            Book a demo
           </a>
           <button
             type="button"
-            className="en-menu-btn en-chip-hover"
-            data-chip=""
-            aria-label={menuOpen ? "Close sections menu" : "Open sections menu"}
-            aria-expanded={menuOpen}
-            aria-controls="en-section-menu"
-            onClick={() => setMenuOpen((open) => !open)}
-            style={{
-              cursor: "pointer",
-              width: "40px",
-              height: "40px",
-              borderRadius: "999px",
-              border: "1px solid rgba(255,255,255,.14)",
-              background: "rgba(255,255,255,.05)",
-              color: "#BFF1FF",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              gap: "4px",
-            }}
+            className="en-burger"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="en-mobile-nav"
+            onClick={() => setOpen((v) => !v)}
           >
-            <i className={`en-burger${menuOpen ? " is-open" : ""}`} aria-hidden="true" />
+            <Icon name={open ? "x" : "menu"} size={22} />
           </button>
         </div>
       </div>
 
-      {/* Wide screens: the full section index, wrapping to a second row rather than
-          scrolling sideways, so every link stays reachable without a swipe. */}
-      <nav className="en-rail" aria-label="Page sections" data-line="">
-        <div
-          className="en-mono en-rail-list"
-          style={{
-            ...container,
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "clamp(12px,2.6vw,30px)",
-            padding: "11px 0",
-            fontSize: "11px",
-            letterSpacing: "1.4px",
-            textTransform: "uppercase",
-          }}
-        >
+      <nav id="en-mobile-nav" className="en-mobile-nav" aria-label="Sections" hidden={!open}>
+        <div className="en-wrap">
           {NAV_LINKS.map((link) => (
             <a
-              key={link.href}
-              data-t="nav"
-              className="en-navlink"
-              href={link.href}
-              style={{ color: "#6A8299", whiteSpace: "nowrap" }}
+              key={link.id}
+              href={`#${link.id}`}
+              className={`en-mobile-link${active === link.id ? " is-active" : ""}`}
+              onClick={() => setOpen(false)}
             >
               {link.label}
+              <Icon name="arrowRight" size={16} />
             </a>
           ))}
-        </div>
-      </nav>
-
-      {/* Narrow screens: the same index as a disclosure panel, two per row. */}
-      <nav
-        id="en-section-menu"
-        className={`en-menu-panel${menuOpen ? " is-open" : ""}`}
-        aria-label="Page sections"
-        data-line=""
-        hidden={!menuOpen}
-      >
-        <div
-          className="en-mono"
-          style={{
-            ...container,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))",
-            gap: "4px",
-            padding: "10px 0 16px",
-            fontSize: "11px",
-            letterSpacing: "1.4px",
-            textTransform: "uppercase",
-          }}
-        >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              data-t="nav"
-              className="en-navlink en-menu-link"
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              style={{ color: "#6A8299" }}
-            >
-              {link.label}
-            </a>
-          ))}
+          <a href="#contact" className="en-btn en-btn-gold en-mobile-cta" onClick={() => setOpen(false)}>
+            Book a demo
+          </a>
         </div>
       </nav>
     </header>
