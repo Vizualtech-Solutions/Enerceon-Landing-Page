@@ -1,11 +1,8 @@
-"use client";
-
-import { useEffect, useMemo, useRef, useState } from "react";
-import Icon from "./Icon";
+import Image from "next/image";
+import Icon, { type IconName } from "./Icon";
 import SectionHead from "./SectionHead";
 import { APP_LOGIN_URL } from "@/lib/site";
-
-type Phase = "idle" | "loading" | "ready";
+import { SCREENS } from "@/lib/screens";
 
 /** Only http(s) addresses are opened; anything else is treated as not configured. */
 function parseUrl(raw: string): URL | null {
@@ -17,57 +14,21 @@ function parseUrl(raw: string): URL | null {
   }
 }
 
+const TRY: { label: string; icon: IconName }[] = [
+  { label: "Tenant ranking & yearly trends", icon: "chart" },
+  { label: "Live power monitoring", icon: "activity" },
+  { label: "Single Line Diagram", icon: "network" },
+  { label: "Energy Sources", icon: "plug" },
+  { label: "Bill Builder", icon: "fileText" },
+  { label: "E-mail & WhatsApp delivery", icon: "send" },
+];
+
 /**
- * Live Preview — loads the real Enerceon registration page (the existing page of the
- * web app, configured with NEXT_PUBLIC_ENERCEON_APP_URL) inside a browser frame,
- * with full-screen and new-tab options. Nothing is copied or mocked.
+ * Live Preview — invites visitors to open the real Enerceon software
+ * (NEXT_PUBLIC_ENERCEON_APP_URL) in a new tab. Nothing is embedded.
  */
 export default function LivePreview() {
-  const url = useMemo(() => parseUrl(APP_LOGIN_URL), []);
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [expanded, setExpanded] = useState(false);
-  const [slow, setSlow] = useState(false);
-  const [blocked, setBlocked] = useState(false);
-  const frameRef = useRef<HTMLDivElement>(null);
-
-  // A secure (https) page cannot embed an http address — the browser blocks it.
-  useEffect(() => {
-    if (url && window.location.protocol === "https:" && url.protocol === "http:") setBlocked(true);
-  }, [url]);
-
-  useEffect(() => {
-    if (phase !== "loading") return;
-    const id = setTimeout(() => setSlow(true), 10000);
-    return () => clearTimeout(id);
-  }, [phase]);
-
-  useEffect(() => {
-    if (!expanded) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setExpanded(false);
-    document.addEventListener("keydown", onKey);
-    document.body.classList.add("en-lock");
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.classList.remove("en-lock");
-    };
-  }, [expanded]);
-
-  const launch = () => {
-    if (!url) return;
-    if (blocked) {
-      window.open(url.href, "_blank", "noopener,noreferrer");
-      return;
-    }
-    setSlow(false);
-    setPhase("loading");
-    frameRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
-  const reload = () => {
-    setPhase("idle");
-    setSlow(false);
-    requestAnimationFrame(() => setPhase("loading"));
-  };
+  const url = parseUrl(APP_LOGIN_URL);
 
   return (
     <section id="live-preview" className="en-sec en-light en-live">
@@ -77,151 +38,104 @@ export default function LivePreview() {
           label="Live Preview"
           title={
             <>
-              Open the real <em>Enerceon</em>
+              Don&apos;t just read about it — <em>drive it</em>
             </>
           }
-          lead="No video, no mock-up: this opens the actual Enerceon registration page. Create your account or sign in, and explore the dashboards, diagrams and billing yourself."
+          lead="The real Enerceon software, running live. Open it in a new tab and see for yourself how every meter, tenant and bill comes together."
           center
         />
 
         <div className="en-live-card en-reveal">
-          <div className="en-live-side">
-            <ul className="en-live-steps">
-              <li>
-                <span>1</span>
-                <div>
-                  <strong>Launch the preview</strong>
-                  <p>The Enerceon registration page loads right here, in a browser frame.</p>
-                </div>
-              </li>
-              <li>
-                <span>2</span>
-                <div>
-                  <strong>Register or sign in</strong>
-                  <p>Create your Enerceon account, or sign in with the access provided by our team.</p>
-                </div>
-              </li>
-              <li>
-                <span>3</span>
-                <div>
-                  <strong>Explore</strong>
-                  <p>Go full screen, or open Enerceon in its own tab at any time.</p>
-                </div>
-              </li>
+          <div className="en-live-copy">
+            <p className="en-live-badge">
+              <span className="en-dot-live" aria-hidden="true" />
+              Live demo · nothing to install
+            </p>
+            <h3>Step inside Enerceon</h3>
+            <p className="en-live-text">
+              Skip the slideshow. Click through the actual dashboards, trace any meter back to its main incomer,
+              see what each energy source consumes and build a bill in seconds — the same screens your team
+              will use every day.
+            </p>
+
+            <p className="en-live-try-label">What you can try</p>
+            <ul className="en-live-try">
+              {TRY.map((t) => (
+                <li key={t.label}>
+                  <Icon name={t.icon} size={15} />
+                  {t.label}
+                </li>
+              ))}
             </ul>
+
             <div className="en-live-actions">
-              <button type="button" className="en-btn en-btn-gold" onClick={launch} disabled={!url}>
-                <Icon name="play" size={16} />
-                {phase === "idle" ? "Launch Live Preview" : "Live Preview open"}
-              </button>
-              {url && (
-                <a href={url.href} target="_blank" rel="noopener noreferrer" className="en-btn en-btn-ghost">
-                  Open in new tab
+              {url ? (
+                <a href={url.href} target="_blank" rel="noopener noreferrer" className="en-btn en-btn-gold en-live-cta">
+                  <Icon name="play" size={16} />
+                  Open Live Demo
                   <Icon name="external" size={15} />
                 </a>
+              ) : (
+                <span className="en-btn en-btn-gold en-live-cta" aria-disabled="true">
+                  Live demo coming soon
+                </span>
               )}
+              <a href="#contact" className="en-btn en-btn-ghost">
+                Book a guided demo
+              </a>
             </div>
             <p className="en-live-help">
-              No access yet? <a href="#contact">Ask us for a demo account</a>.
+              <Icon name="external" size={13} />
+              <span>
+                Opens in a new tab. Need access? <a href="#contact">Ask our team</a>.
+              </span>
             </p>
           </div>
 
-          <div ref={frameRef} className={`en-browser${expanded ? " is-expanded" : ""}`}>
-            {expanded && <div className="en-browser-backdrop" onClick={() => setExpanded(false)} aria-hidden="true" />}
-            <div className="en-browser-window" role={expanded ? "dialog" : undefined} aria-modal={expanded || undefined} aria-label={expanded ? "Enerceon live preview" : undefined}>
-              <div className="en-browser-bar">
-                <span className="en-browser-dots" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <span className="en-browser-url" title={url?.href}>
-                  <Icon name="lock" size={12} />
-                  {url ? `${url.host}${url.pathname === "/" ? "" : url.pathname}` : "Not configured"}
-                </span>
-                <span className="en-browser-tools">
-                  {phase !== "idle" && (
-                    <button type="button" onClick={reload} aria-label="Reload preview" title="Reload">
-                      <Icon name="refresh" size={15} />
-                    </button>
-                  )}
-                  {phase !== "idle" && (
-                    <button
-                      type="button"
-                      onClick={() => setExpanded((v) => !v)}
-                      aria-label={expanded ? "Exit full screen" : "Full screen"}
-                      title={expanded ? "Exit full screen" : "Full screen"}
-                    >
-                      <Icon name={expanded ? "minimize" : "maximize"} size={15} />
-                    </button>
-                  )}
-                  {url && (
-                    <a href={url.href} target="_blank" rel="noopener noreferrer" aria-label="Open in new tab" title="Open in new tab">
-                      <Icon name="external" size={15} />
-                    </a>
-                  )}
-                  {expanded && (
-                    <button type="button" onClick={() => setExpanded(false)} aria-label="Close full screen" title="Close">
-                      <Icon name="x" size={16} />
-                    </button>
-                  )}
-                </span>
-              </div>
-
-              <div className="en-browser-view">
-                {phase === "idle" ? (
-                  <div className="en-browser-idle">
-                    <span className="en-browser-mark" aria-hidden="true">
-                      <Icon name="monitor" size={30} />
-                    </span>
-                    <strong>{url ? "Enerceon registration page" : "Live Preview is not configured"}</strong>
-                    <p>
-                      {!url
-                        ? "Set NEXT_PUBLIC_ENERCEON_APP_URL to the address of the Enerceon registration page."
-                        : blocked
-                          ? "This page is secure (https) and the Enerceon address is not, so the browser will open it in a new tab."
-                          : "Press launch to load the live application here."}
-                    </p>
-                    {url && (
-                      <button type="button" className="en-btn en-btn-gold en-btn-sm" onClick={launch}>
-                        <Icon name={blocked ? "external" : "play"} size={15} />
-                        {blocked ? "Open registration page" : "Launch Live Preview"}
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    {phase === "loading" && (
-                      <div className="en-browser-loading" aria-live="polite">
-                        <span className="en-spinner" aria-hidden="true" />
-                        <p>Connecting to Enerceon…</p>
-                        {slow && (
-                          <p className="en-browser-slow">
-                            Taking longer than usual? The application may not allow embedding or may be unreachable
-                            from your network.{" "}
-                            <a href={url!.href} target="_blank" rel="noopener noreferrer">
-                              Open it in a new tab
-                            </a>
-                            .
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    <iframe
-                      src={url!.href}
-                      title="Enerceon registration page"
-                      onLoad={() => setPhase("ready")}
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allow="clipboard-write; fullscreen"
-                      className={phase === "ready" ? "is-ready" : ""}
-                    />
-                  </>
-                )}
-              </div>
+          {/* Static collage of real screens — a link to the live demo, not an embedded app */}
+          {url ? (
+            <a
+              href={url.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="en-live-collage"
+              aria-label="Open the Enerceon live demo in a new tab"
+            >
+              <Collage />
+            </a>
+          ) : (
+            <div className="en-live-collage" aria-hidden="true">
+              <Collage />
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
+  );
+}
+
+function Collage() {
+  const back = SCREENS.singleLineDiagram;
+  const main = SCREENS.liveMonitoring;
+  const front = SCREENS.billPreview;
+  return (
+    <>
+      <span className="en-live-shot is-back">
+        <Image src={back.src} alt="" width={back.w} height={back.h} quality={90} sizes="(max-width: 1040px) 60vw, 380px" />
+      </span>
+      <span className="en-live-shot is-main">
+        <Image src={main.src} alt="" width={main.w} height={main.h} quality={90} sizes="(max-width: 1040px) 86vw, 620px" />
+      </span>
+      <span className="en-live-shot is-front">
+        <Image src={front.src} alt="" width={front.w} height={front.h} quality={90} sizes="(max-width: 1040px) 34vw, 220px" />
+      </span>
+      <span className="en-live-pill" aria-hidden="true">
+        <span className="en-dot-live" />
+        LIVE
+      </span>
+      <span className="en-live-open" aria-hidden="true">
+        <Icon name="external" size={18} />
+      </span>
+    </>
   );
 }

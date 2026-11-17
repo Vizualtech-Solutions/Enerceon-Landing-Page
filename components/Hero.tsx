@@ -99,6 +99,7 @@ export default function Hero() {
               width={SCREENS.billPreview.w}
               height={SCREENS.billPreview.h}
               sizes="240px"
+              quality={90}
               priority
             />
           </button>

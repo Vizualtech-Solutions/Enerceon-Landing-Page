@@ -1,4 +1,6 @@
-﻿node_modules/
+node_modules/
 .next/
+# environment files hold secrets (SMTP password) — never commit them
 .env*
+!.env.example
 *.tsbuildinfo

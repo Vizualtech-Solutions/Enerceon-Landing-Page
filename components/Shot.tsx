@@ -54,6 +54,7 @@ export default function Shot({
           width={screen.w}
           height={screen.h}
           sizes={sizes}
+          quality={90}
           priority={priority}
           style={{ width: "100%", height: "auto", display: "block" }}
         />

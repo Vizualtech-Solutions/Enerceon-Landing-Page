@@ -64,7 +64,8 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
                 alt={item.screen.alt}
                 width={item.screen.w}
                 height={item.screen.h}
-                sizes="(max-width: 1700px) 96vw, 1600px"
+                sizes="96vw"
+                quality={90}
                 style={{ width: "100%", height: "auto", display: "block" }}
               />
             </div>

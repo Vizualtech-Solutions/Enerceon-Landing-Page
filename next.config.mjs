@@ -55,6 +55,10 @@ const allowedDevOrigins = [
 const nextConfig = {
   reactStrictMode: true,
   allowedDevOrigins,
+  images: {
+    // 75 = Next.js default; 90 = product screenshots (dense UI text stays sharp)
+    qualities: [75, 90],
+  },
   async redirects() {
     return [
       // The site is a single page now: the old standalone pages point to their sections.

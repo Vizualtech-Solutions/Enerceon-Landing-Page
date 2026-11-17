@@ -16,9 +16,9 @@ function ThemeCompare() {
   return (
     <div className="en-compare" style={{ ["--pos" as string]: `${pos}%` }}>
       <div className="en-compare-stage" style={{ aspectRatio: `${light.w} / ${light.h}` }}>
-        <Image src={dark.src} alt={dark.alt} fill sizes="(max-width: 1000px) 94vw, 720px" className="en-compare-img" />
+        <Image src={dark.src} alt={dark.alt} fill quality={90} sizes="(max-width: 1000px) 94vw, 720px" className="en-compare-img" />
         <div className="en-compare-top" aria-hidden="true">
-          <Image src={light.src} alt="" fill sizes="(max-width: 1000px) 94vw, 720px" className="en-compare-img" />
+          <Image src={light.src} alt="" fill quality={90} sizes="(max-width: 1000px) 94vw, 720px" className="en-compare-img" />
         </div>
         <span className="en-compare-handle" aria-hidden="true">
           <Icon name="sun" size={14} />

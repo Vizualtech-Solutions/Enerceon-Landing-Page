@@ -40,7 +40,7 @@ export default function Header() {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    const mq = window.matchMedia("(min-width: 1120px)");
+    const mq = window.matchMedia("(min-width: 1280px)");
     const onMq = () => mq.matches && setOpen(false);
     document.addEventListener("keydown", onKey);
     mq.addEventListener("change", onMq);
@@ -60,7 +60,7 @@ export default function Header() {
             width={1405}
             height={170}
             priority
-            sizes="160px"
+            sizes="190px"
           />
         </a>
 
@@ -89,7 +89,7 @@ export default function Header() {
             aria-controls="en-mobile-nav"
             onClick={() => setOpen((v) => !v)}
           >
-            <Icon name={open ? "x" : "menu"} size={22} />
+            <Icon name={open ? "x" : "menu"} size={26} />
           </button>
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function Header() {
               onClick={() => setOpen(false)}
             >
               {link.label}
-              <Icon name="arrowRight" size={16} />
+              <Icon name="arrowRight" size={19} />
             </a>
           ))}
           <a href="#contact" className="en-btn en-btn-gold en-mobile-cta" onClick={() => setOpen(false)}>

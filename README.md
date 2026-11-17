@@ -66,25 +66,48 @@ is visible even if a script is slow or blocked.
 
 ## Settings (`.env.local`)
 
+Copy `.env.example` to `.env.local` and fill it in. `.env.local` is ignored by git (see `.gitignore`)
+— never commit it and never paste the SMTP password anywhere in the code.
+
 | Variable | Purpose |
 |---|---|
-| `NEXT_PUBLIC_ENERCEON_APP_URL` | Page opened by **Live Preview**. Default: `http://192.168.100.202:3000/registration`. |
-| `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` | Web3Forms key for the demo-request form. Without it the form tells visitors to e-mail sales@enerceon.com. |
-| `ALLOWED_DEV_ORIGINS` | Optional, development only: extra host names (comma separated) allowed to open `npm run dev`. |
+| `NEXT_PUBLIC_ENERCEON_APP_URL` | Page opened (in a new tab) by **Open Live Demo**. Default: `http://192.168.100.202:3000/registration`. Public — no secrets. |
+| `SMTP_HOST` | `smtp.gmail.com` |
+| `SMTP_PORT` | `587` |
+| `SMTP_SECURE` | `false` (port 587 uses STARTTLS; TLS is still required) |
+| `SMTP_USER` | The Gmail address that sends the form e-mails |
+| `SMTP_PASS` | That account's **Google App Password** (16 characters) — not the normal Gmail password |
+| `CONTACT_TO` | Optional. Inbox that receives the requests (default: `SMTP_USER`) |
+| `CONTACT_TIMEZONE` | Optional. Time zone shown in the e-mail (default: `Asia/Karachi`) |
+| `ALLOWED_DEV_ORIGINS` | Optional, development only: extra host names allowed to open `npm run dev`. |
 
-`NEXT_PUBLIC_` values are public (built into the page). Never put passwords or tokens in them.
 Restart `npm run dev` (or rebuild for `npm start`) after changing `.env.local`.
+On Vercel or another host, add the same variables in the project's **Environment Variables** settings.
+
+### "Talk to us" form (Gmail SMTP)
+
+- The form posts to `/api/contact` (`app/api/contact/route.ts`). The server validates the details
+  again, then e-mails them to `CONTACT_TO` / `SMTP_USER` with `nodemailer` through Gmail.
+- The visitor's address is set as **Reply-To**, so pressing *Reply* in Gmail answers the visitor.
+- Protection: same-site check, honeypot field, size limit, 5 requests per 10 minutes per IP.
+- SMTP details stay on the server; the browser only ever sees "sent" or a friendly error.
+- **Create the App Password:** Google Account → Security → turn on 2-Step Verification →
+  *App passwords* → create one named "Enerceon website" → paste the 16 characters into `SMTP_PASS`.
+- If sending fails, the reason is printed in the server console (`[contact] sending failed: …`);
+  `535` means the App Password is wrong.
 
 ### Live Preview notes
 
-- The preview loads the existing Enerceon registration page in an `<iframe>`, with **Full screen**
-  and **Open in new tab**.
-- `192.168.100.202:3000` must be reachable from the device viewing the website (same network,
-  and port 3000 allowed in that machine's firewall).
-- On the public website (https) the app address must also be **https**; browsers block an http
-  page inside an https page. When that happens the button opens the page in a new tab instead.
-- If the Enerceon app sends `X-Frame-Options: DENY` or a `Content-Security-Policy: frame-ancestors`
-  header, allow the website's address, or visitors can use **Open in new tab**.
+- **Open Live Demo** opens the Enerceon app in a **new tab** (nothing is embedded in the website).
+- The address must be reachable by visitors. `192.168.x.x` works only inside your own network; for the
+  public website use the app's public address (preferably https).
+
+### Screenshots
+
+- Product screenshots live in `public/assets/screens/` (WebP) and their pixel sizes in `lib/screens.ts`.
+- They were upscaled 2× (Lanczos + light sharpening — no AI-generated content) and are served at
+  quality 90. For the sharpest result, replace them with fresh captures from the app taken at 2× or
+  3× browser zoom / device pixel ratio (same file names), and update the sizes in `lib/screens.ts`.
 
 ## Structure
 
@@ -104,7 +127,9 @@ components/
   SectionHead.tsx  Icon.tsx  Reveal.tsx  PageShell.tsx  Disclosure.tsx
 scripts/
   network-urls.mjs    prints the local and network addresses before dev/start
+app/api/contact/route.ts  e-mails the "Talk to us" form through Gmail SMTP
 lib/
+  contact.ts          form validation rules (shared by browser and server)
   content.ts          all texts (features, tabs, steps)
   screens.ts          screenshot list with sizes
   site.ts             site URL, e-mails, Live Preview address

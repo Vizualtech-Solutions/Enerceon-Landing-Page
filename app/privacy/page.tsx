@@ -21,7 +21,7 @@ export default function PrivacyPage() {
       eyebrow="Privacy"
       title="Privacy notice"
       intro="What this website collects, why, and who else handles it. Covers www.enerceon.com only — not the Enerceon platform as deployed inside a customer environment."
-      updated="7 November 2026"
+      updated="16 November 2026"
     >
       <div className="en-card-grid en-rise" style={{ marginBottom: "clamp(22px,4vw,34px)" }}>
         {FACTS.map((f, i) => (
@@ -80,8 +80,8 @@ export default function PrivacyPage() {
       <Disclosure index={4} title="Who else handles it" delay={140}>
         <ul>
           <li>
-            <strong>Web3Forms</strong> delivers the demo form to our inbox — your submission passes
-            through their systems.
+            <strong>Google (Gmail)</strong> delivers the demo form to our inbox — your submission is
+            sent from our server through Google&apos;s mail service.
           </li>
           <li>
             <strong>Vercel</strong> hosts this website and processes the server logs above.
@@ -96,9 +96,9 @@ export default function PrivacyPage() {
       <Disclosure index={5} title="Cookies and local storage" delay={170}>
         <p data-t="body" style={{ ...proseP, margin: 0 }}>
           This site sets no cookies of its own, runs no advertising or third-party analytics and
-          stores nothing in your browser. If you press <strong>Launch Live Preview</strong>, the
-          Enerceon registration page is loaded from the Enerceon application server inside the page;
-          anything you type there is sent to that application, not to this website.
+          stores nothing in your browser. <strong>Open Live Demo</strong> opens the Enerceon
+          application in a new tab; anything you type there is sent to that application, not to
+          this website.
         </p>
       </Disclosure>
 
