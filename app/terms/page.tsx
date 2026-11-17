@@ -99,7 +99,7 @@ export default function TermsPage() {
           and continuing to use the site after a change means accepting the revised terms.
         </p>
         <p data-t="body" style={{ ...proseP, margin: 0 }}>
-          Questions go to <a href="mailto:sales@enerceon.com">sales@enerceon.com</a>. See also our{" "}
+          Questions go to <a href="mailto:contact@enerceon.com">contact@enerceon.com</a>. See also our{" "}
           <Link href="/privacy">privacy notice</Link>.
         </p>
       </Disclosure>

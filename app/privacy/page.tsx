@@ -44,7 +44,7 @@ export default function PrivacyPage() {
         <p data-t="body" style={proseP}>
           This website is operated by <strong>VizualTech</strong>, which publishes Enerceon. For any
           question about this notice, or about information you have sent us, email{" "}
-          <a href="mailto:sales@enerceon.com">sales@enerceon.com</a>.
+          <a href="mailto:contact@enerceon.com">contact@enerceon.com</a>.
         </p>
       </Disclosure>
 
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
       <Disclosure index={7} title="Your choices" delay={230}>
         <p data-t="body" style={{ ...proseP, margin: 0 }}>
           You can ask for a copy of what we hold about you, ask us to correct it, or ask us to delete
-          it. Email <a href="mailto:sales@enerceon.com">sales@enerceon.com</a> and we will action it.
+          it. Email <a href="mailto:contact@enerceon.com">contact@enerceon.com</a> and we will action it.
           Depending on where you live, you may also have the right to complain to a data protection
           authority.
         </p>
