@@ -70,7 +70,7 @@ export default function LivePreview() {
 
             <div className="en-live-actions">
               {url ? (
-                <a href={url.href} target="_blank" rel="noopener noreferrer" className="en-btn en-btn-gold en-live-cta">
+                <a href={url.href} target="_blank" rel="noopener noreferrer" className="en-btn en-btn-gold en-live-cta "style={{ pointerEvents: "none", opacity: 0.5, cursor: "not-allowed" }}> 
                   <Icon name="play" size={16} />
                   Open Live Demo
                   <Icon name="external" size={15} />
@@ -94,7 +94,7 @@ export default function LivePreview() {
 
           {/* Static collage of real screens — a link to the live demo, not an embedded app */}
           {url ? (
-            <a
+            <a style={{ pointerEvents: "none", cursor: "not-allowed" }}
               href={url.href}
               target="_blank"
               rel="noopener noreferrer"
